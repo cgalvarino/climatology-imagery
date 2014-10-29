@@ -1,0 +1,102 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  color: gray;
+  overflow-x: hidden;
+}
+
+#title {
+  text-align: center;
+}
+
+#time-series-graph {
+  height: 550px;
+}
+
+#map {
+  border: 1px solid #A6D1DB;
+}
+
+#footer {
+  padding-top: 6px;
+}
+
+#summary {
+  font-size: smaller;
+  color: #545454;
+}
+
+.smallFont {
+  font-size: smaller;
+}
+
+.btn,.dropdown-menu {
+   -webkit-border-radius: 20px;
+   -moz-border-radius: 20px;
+   border-radius: 20px;
+}
+
+.btn-custom-lighten.active {
+  color: rgba(255, 255, 255, 0.75);
+}
+.btn-custom-lighten {
+  color: #ffffff;
+  text-shadow: 0 -1px 0 rgba(0, 0, 0, 0.25);
+  background-color: #409bae;
+  background-image: -moz-linear-gradient(top, #388fa2, #4cacc1);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#388fa2), to(#4cacc1));
+  background-image: -webkit-linear-gradient(top, #388fa2, #4cacc1);
+  background-image: -o-linear-gradient(top, #388fa2, #4cacc1);
+  background-image: linear-gradient(to bottom, #388fa2, #4cacc1);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff388fa2', endColorstr='#ff4cacc1', GradientType=0);
+  border-color: #4cacc1 #4cacc1 #317e8f;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  *background-color: #4cacc1;
+  /* Darken IE7 buttons by default so they stand out more given they won't have borders */
+
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled = false);
+}
+.btn-custom-lighten:hover,
+.btn-custom-lighten:focus,
+.btn-custom-lighten:active,
+.btn-custom-lighten.active,
+.btn-custom-lighten.disabled,
+.btn-custom-lighten[disabled] {
+  color: #ffffff;
+  background-color: #4cacc1;
+  *background-color: #3fa0b5;
+}
+.btn-custom-lighten:active,
+.btn-custom-lighten.active {
+  background-color: #388fa2 ;
+}
+
+#coords .modal-dialog {
+  width : 350px;
+}
+
+#coords .modal-dialog .form-group {
+  margin-bottom : 3px;
+}
+
+#coords .modal-dialog .spacer {
+  height : 10px;
+}
+
+#coords .modal-footer {
+  padding: 15px 0px 0px 0px;
+}
+
+#coords .form-horizontal .control-label {
+    text-align: left;
+}
+
+div.dataTables_wrapper { clear: both;position: absolute;top : 0}
+
+#dataTable {
+  display: none;
+}
+
+.bootstrap-select:not([class*="span"]):not([class*="col-"]):not([class*="form-control"]):not(.input-group-btn) {
+  width: 200px;
+}
