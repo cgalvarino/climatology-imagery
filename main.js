@@ -101,7 +101,7 @@ function init() {
             validating : 'glyphicon glyphicon-refresh'
           }
           ,fields : {
-            customLat : {
+            customMinLat : {
               validators : {
                 notEmpty : {
                   message: 'This field is required.'
@@ -113,7 +113,31 @@ function init() {
                 }
               }
             }
-            ,customLon : {
+            ,customMinLon : {
+              validators : {
+                notEmpty : {
+                  message: 'This field is required.'
+                }
+                ,callback : {
+                  callback : function(value,validator) {
+                    return $.isNumeric(value);
+                  }
+                }
+              }
+            }
+            ,customMaxLat : {
+              validators : {
+                notEmpty : {
+                  message: 'This field is required.'
+                }
+                ,callback : {
+                  callback : function(value,validator) {
+                    return $.isNumeric(value);
+                  }
+                }
+              }
+            }
+            ,customMaxLon : {
               validators : {
                 notEmpty : {
                   message: 'This field is required.'
@@ -129,11 +153,16 @@ function init() {
         })
         .on('shown.bs.modal', function() {
           $('#coords').bootstrapValidator('resetForm',true);
-          $('#coords').find('[name="customLat"]').focus();
+          if (lyrQuery.features.length > 0) {
+            var bounds = lyrQuery.getDataExtent().clone().transform(proj3857,proj4326).toArray();
+            $('#customMinLon').val(Math.round(bounds[0] * 10000) / 10000);
+            $('#customMinLat').val(Math.round(bounds[1] * 10000) / 10000);
+            $('#customMaxLon').val(Math.round(bounds[2] * 10000) / 10000);
+            $('#customMaxLat').val(Math.round(bounds[3] * 10000) / 10000);
+          }
         })
         .on('error.validator.bv', function(e, data) {
           data.element
-          .data('bv.legend')
           // Hide all the messages
           .find('.help-block[data-bv-for="' + data.field + '"]').hide()
           // Show only message associated with current validator
@@ -143,9 +172,10 @@ function init() {
           e.preventDefault();
           lyrQuery.removeAllFeatures();
           var f = new OpenLayers.Feature.Vector(
-            new OpenLayers.Geometry.Point($('#customLon').val(),$('#customLat').val()).transform(proj4326,proj3857)
+            new OpenLayers.Bounds($('#customMinLon').val(),$('#customMinLat').val(),$('#customMaxLon').val(),$('#customMaxLat').val()).toGeometry().transform(proj4326,proj3857)
           );
           lyrQuery.addFeatures([f]);
+          map.zoomToExtent(f.geometry.getBounds());
           $('#location').selectpicker('val','custom');
           $('#coords').modal('hide');
           query();

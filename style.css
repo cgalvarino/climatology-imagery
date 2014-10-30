@@ -107,3 +107,7 @@ div.dataTables_wrapper { clear: both;position: absolute;top : 0}
   top: 112px;
   right: 40px;
 }
+
+.aqua, .aqua a {
+  color: rgb(56, 143, 162);
+}

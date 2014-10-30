@@ -22,7 +22,10 @@ var catalog = {
   ,'sites' : {
     'Regional shortcuts' : {
       'SECOORA' : {
-         'wkt' : 'POLYGON((-101 13,-68 13,-68 40,-101 40,-101 13))'
+        'wkt' : 'POLYGON((-101 13,-68 13,-68 40,-101 40,-101 13))'
+      }
+      ,'Gulf of Mexico' : {
+        'wkt' : 'POLYGON((-98.5 22.5,-79.5 22.5,-79.5 31.75,-98.5 31.75,-98.5 22.5))'
       }
     }
   }
