@@ -196,6 +196,12 @@ function init() {
 
   $('.selectpicker').selectpicker({width : 200});
 
+  var i = 0;
+  _.each(['Year'].concat(catalog.intervals),function(o) {
+    $('#dataTable thead').append('<th class="text-center ' + (i == 0 ? 'yearCol' : '') + '">' + o + '</th>');
+    i++;
+  });
+
   resizeAll();
 
   var style = new OpenLayers.Style(
@@ -310,12 +316,47 @@ function resizeMap() {
 function resizeAll() {
   var fixedHeightBelowGraph = 120;
   $('#resultsWrapper').height($(window).height() - $('#title').height() - $('#resultsWrapper').position().top - 24);
-  $('#time-series-graph').height($('#resultsWrapper').height() - $('#time-series-graph').position().top + $('#resultsWrapper').position().top - fixedHeightBelowGraph);
+  $('.dataTableContents').height($('#resultsWrapper').height() - 112);
+  var w = $('#dataTable tbody td').first().width();
+  $('#dataTable thead th').not(":first").width(w);
   resizeMap();
 }
 
 function query() {
-  return;
+  var v = $('#vars .active').text();
+  var depth = $('#depths .active').text()
+  var years = $('#years select').selectpicker('val');
+  var intervals = catalog.intervals;
+  var bbox  = lyrQuery.getDataExtent().clone().transform(proj3857,proj4326).toArray();
+
+  $('#dataTable tbody').empty();
+  _.each(years,function(y) {
+    var td = ['<th class="text-center yearCol">' + y + '</th>'];
+    _.each(intervals,function(i) {
+      var p = catalog.model.getMap(v,depth,y,i);
+      var u = makeGetMapUrl(p,bbox,150);
+      td.push('<td class="text-center"><img width=150 height=150 src="' + u + '"></td>');
+    });
+    $('#dataTable tbody').append('<tr>' + td.join('') + '</tr>');
+  });
+}
+
+function makeGetMapUrl(p,bbox,size) {
+  // figure out the lats based on the bbox lon's & size
+  var ratio = (Number(bbox[2]) - Number(bbox[0])) / size;
+  var dLat  = ratio * size - Number(bbox[3]) + Number(bbox[1]);
+  bbox[1] = Number(bbox[1]) - dLat / 2; 
+  bbox[3] = Number(bbox[3]) + dLat / 2;
+
+  return p['url'] + '?TRANSPARENT=TRUE&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326'
+    + '&LAYERS='          + p['LAYERS']
+    + '&STYLES='          + p['STYLES']
+    + '&COLORSCALERANGE=' + p['COLORSCALERANGE']
+    + '&ELEVATION='       + p['ELEVATION']
+    + '&TIME='            + p['TIME']
+    + '&WIDTH='           + size
+    + '&HEIGHT='          + size
+    + '&BBOX='            + bbox.join(',');
 }
 
 window.onresize = resizeAll;

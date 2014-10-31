@@ -1,5 +1,6 @@
 var catalog = {
    'years'     : [2011,2012,2013,2014]
+  ,'intervals' : ['Winter','Spring','Summer','Fall']
   ,'variables' : [
     {
        name : 'Temperature'
@@ -29,35 +30,44 @@ var catalog = {
       }
     }
   }
-  ,'models' : {
-    'SABGOM' : {
-      'getObs' : function(v,year,avg,lon,lat,stat) {
-        var vh = {
-           'Temperature' : ['temp','']
-          ,'Salinity'    : ['salt','_salt']
-        };
-        var ah = {
-           'Day'   : 'daily'
-          ,'Month' : 'monthly'
-        };
-        var d = 'clim_' + ah[avg] + '_avg_surface';
-        if (stat) {
-          d    = 'clim_all_' + ah[avg] + '_' + stat + '_surface'
-          year = '2018';
-        }
-        return {
-          u : 'http://tds.secoora.org/thredds/ncss/grid/' + d + vh[v][1] + '.nc?var=' + vh[v][0] + '&latitude=' + lat + '&longitude=' + lon + '&time_start=' + year + '-01-01T00:00:00Z&time_end=' + year + '-12-31T23:59:59Z&accept=xml'
-          ,v : vh[v][0]
-        };
+  ,'model' : {
+     name   : 'SABGOM'
+    ,getMap : function(v,d,year,interval) {
+      var layer;
+      switch(v) {
+        case 'Temperature' : layer = 'temp'; break;
+        case 'Salinity'    : layer = 'salt'; break;
       }
-      ,'wkt' : ''
-      ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}
+
+      var dt = year + '-';
+      switch(interval) {
+        case 'Winter' : dt += '10-01'; break;
+        case 'Spring' : dt += '10-08'; break;
+        case 'Summer' : dt += '10-15'; break;
+        case 'Fall'   : dt += '10-23'; break;
+      }
+
+      var elevation;
+      switch(d) {
+        case 'Sea surface' : d = '-0.013888888888888888'; break;
+        case 'Sea floor'   : d = '-0.986111111111111'; break;
+      }
+
+      return {
+         LAYERS          : layer
+        ,STYLES          : 'boxfill/rainbow'
+        ,COLORSCALERANGE : '20,30'
+        ,ELEVATION       : d
+        ,TIME            : dt
+        ,url             : 'http://omgsrv1.meas.ncsu.edu:8080/thredds/wms/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
+      };
     }
+    ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}
   }
 };
 
 var defaults = {
-   'years' : [2011,2012,2013,2014]
+   'years' : [2014]
   ,'var'   : 'Temperature'
   ,'site'  : 'SECOORA'
   ,'depth' : 'Sea surface'
