@@ -24,6 +24,11 @@ function init() {
     ctlBox.activate();
   });
 
+  $(document).delegate('*[data-toggle="lightbox"]', 'click', function(event) {
+    event.preventDefault();
+    return $(this).ekkoLightbox();
+  });
+
   _.each(_.pluck(catalog.variables,'name').sort(),function(o) {
     $('#vars .panel-body').append('<button type="button" data-value="' + o + '" class="btn btn-default">' + o + '</button> ');
   });
@@ -235,6 +240,12 @@ function init() {
     query();
   });
 
+  var bm = new OpenLayers.Layer.ArcGIS93Rest(
+     "ESRI Street World"
+    ,"http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/export"
+  );
+  bm.params.FORMAT = "jpg";
+
   map = new OpenLayers.Map('map',{
     layers  : [
       new OpenLayers.Layer.XYZ(
@@ -248,6 +259,7 @@ function init() {
       )
       ,lyrQuery
     ]
+    ,projection : proj3857
   });
   setTimeout(function() {
     map.zoomToExtent(new OpenLayers.Bounds(-101,13,-68,40).transform(proj4326,proj3857));
@@ -335,15 +347,15 @@ function query() {
   var depth = $('#depths .active').text()
   var years = $('#years select').selectpicker('val');
   var intervals = catalog.intervals;
-  var bbox  = lyrQuery.getDataExtent().clone().transform(proj3857,proj4326).toArray();
+  var bbox  = lyrQuery.getDataExtent().toArray();
 
   $('#dataTable').DataTable().clear();
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
     _.each(intervals,function(i) {
       var p = catalog.model.getMap(v,depth,y,i);
-      var u = makeGetMapUrl(p,bbox,150);
-      td.push('<td><img width=150 height=150 src="' + u + '"></td>');
+      var u = makeGetMapUrl(p,bbox,600);
+      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
     });
     $('#dataTable').DataTable().row.add(td).draw();
   });
@@ -356,15 +368,44 @@ function makeGetMapUrl(p,bbox,size) {
   bbox[1] = Number(bbox[1]) - dLat / 2; 
   bbox[3] = Number(bbox[3]) + dLat / 2;
 
-  return p['url'] + '?TRANSPARENT=TRUE&FORMAT=image/png&SERVICE=WMS&VERSION=1.1.1&REQUEST=GetMap&SRS=EPSG:4326'
-    + '&LAYERS='          + p['LAYERS']
-    + '&STYLES='          + p['STYLES']
-    + '&COLORSCALERANGE=' + p['COLORSCALERANGE']
-    + '&ELEVATION='       + p['ELEVATION']
-    + '&TIME='            + p['TIME']
-    + '&WIDTH='           + size
-    + '&HEIGHT='          + size
-    + '&BBOX='            + bbox.join(',');
+  var fg = OpenLayers.Util.urlAppend(
+     p['url']
+    ,OpenLayers.Util.getParameterString({
+       LAYERS          : p['LAYERS']
+      ,STYLES          : p['STYLES']
+      ,COLORSCALERANGE : p['COLORSCALERANGE']
+      ,ELEVATION       : p['ELEVATION']
+      ,TIME            : p['TIME']
+      ,WIDTH           : size
+      ,HEIGHT          : size
+      ,BBOX            : bbox.join(',')
+      ,TRANSPARENT     : true
+      ,FORMAT          : 'image/png'
+      ,SERVICE         : 'WMS'
+      ,VERSION         : '1.1.1'
+      ,REQUEST         : 'GetMap'
+      ,SRS             : 'EPSG:3857'
+    })
+  );
+
+  var bm = OpenLayers.Util.urlAppend(
+     'http://nowcoast.noaa.gov/wms/com.esri.wms.Esrimap/geolinks'
+    ,OpenLayers.Util.getParameterString({
+       LAYERS          : 'world_countries,world_rivers,world_lakes,us_canada_back,great_lakes'
+      ,STYLES          : ''
+      ,WIDTH           : size
+      ,HEIGHT          : size
+      ,BBOX            : bbox.join(',')
+      ,TRANSPARENT     : true
+      ,FORMAT          : 'image/png'
+      ,SERVICE         : 'WMS'
+      ,VERSION         : '1.1.1'
+      ,REQUEST         : 'GetMap'
+      ,SRS             : 'EPSG:3857'
+    })
+  );
+
+  return {fg : fg,bm : bm};
 }
 
 window.onresize = resizeAll;
