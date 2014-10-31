@@ -117,3 +117,9 @@ table.dataTable thead th, table.dataTable thead td {
 #dataTable_wrapper img {
   border : 1px solid rgb(169, 210, 220);
 }
+
+#legend {
+  text-align : center;
+  height : 50px;
+  margin-top : 5px;
+}

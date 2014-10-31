@@ -339,16 +339,17 @@ function resizeMap() {
 
 function resizeAll() {
   $('#resultsWrapper').height($(window).height() - $('#resultsWrapper').position().top - 24);
-  $('.dataTables_scrollBody').height($('#resultsWrapper').height() - 113);
+  $('.dataTables_scrollBody').height($('#resultsWrapper').height() - $('#legend').height() - 120);
   resizeMap();
 }
 
 function query() {
-  var v = $('#vars .active').text();
-  var depth = $('#depths .active').text()
-  var years = $('#years select').selectpicker('val');
+  var v         = $('#vars .active').text();
+  var depth     = $('#depths .active').text()
+  var years     = $('#years select').selectpicker('val');
   var intervals = catalog.intervals;
-  var bbox  = lyrQuery.getDataExtent().toArray();
+  var bbox      = lyrQuery.getDataExtent().toArray();
+  var legend    = 'img/blank.png';
 
   $('#dataTable').DataTable().clear();
   _.each(years,function(y) {
@@ -357,9 +358,15 @@ function query() {
       var p = catalog.model.getMap(v,depth,y,i);
       var u = makeGetMapUrl(p,bbox,600);
       td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
+      legend = 'img/' + p.legend + '.png';
     });
     $('#dataTable').DataTable().row.add(td).draw();
   });
+
+  $('#legend img').attr('src',legend);
+  var uom = _.findWhere(catalog.variables,{name : v}).uom;
+  uom = uom ? '<br>(' + uom + ')' : '';
+  $('#legend #text').html('<b>' + v + uom + '<br>from ' + catalog.model.name + '</b>');
 }
 
 function makeGetMapUrl(p,bbox,size) {

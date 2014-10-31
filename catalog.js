@@ -4,20 +4,11 @@ var catalog = {
   ,'variables' : [
     {
        name : 'Temperature'
-      ,uom  : function(u,o) {
-        if (/celsius/i.test(u)) {
-          return {label : 'Fahrenheit',value : o * 1.8 + 32};
-        }
-        else {
-          return {label : u,value : o};
-        }
-      }
+      ,uom  : 'degrees Fahrenheit'
     }
     ,{
        name : 'Salinity'
-      ,uom  : function(u,o) {
-        return {label : u,value : o};
-      }
+      ,uom  : false
     }
   ]
   ,'sites' : {
@@ -39,27 +30,33 @@ var catalog = {
         case 'Salinity'    : layer = 'salt'; break;
       }
 
-      var dt = year + '-';
+      var dt = '2014' + '-';
       switch(interval) {
-        case 'Winter' : dt += '10-01'; break;
-        case 'Spring' : dt += '10-08'; break;
-        case 'Summer' : dt += '10-15'; break;
-        case 'Fall'   : dt += '10-23'; break;
+        case 'Winter' : dt += '10-08'; break;
+        case 'Spring' : dt += '10-15'; break;
+        case 'Summer' : dt += '10-23'; break;
+        case 'Fall'   : dt += '10-30'; break;
       }
 
       var elevation;
       switch(d) {
-        case 'Sea surface' : d = '-0.013888888888888888'; break;
-        case 'Sea floor'   : d = '-0.986111111111111'; break;
+        case 'Sea surface' : elevation = '-0.013888888888888888'; break;
+        case 'Sea floor'   : elevation = '-0.986111111111111'; break;
       }
+
+      var colorscalerange = {
+         'Temperature' : {'Sea surface' : '20,35','Sea floor' : '0,10'}
+        ,'Salinity'    : {'Sea surface' : '30,37','Sea floor' : '30,37'}
+      };
 
       return {
          LAYERS          : layer
         ,STYLES          : 'boxfill/rainbow'
-        ,COLORSCALERANGE : '20,30'
-        ,ELEVATION       : d
+        ,COLORSCALERANGE : colorscalerange[v][d]
+        ,ELEVATION       : elevation
         ,TIME            : dt
         ,url             : 'http://omgsrv1.meas.ncsu.edu:8080/thredds/wms/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
+        ,legend          : ['sabgom',layer,elevation].join('.')
       };
     }
     ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}
@@ -67,7 +64,7 @@ var catalog = {
 };
 
 var defaults = {
-   'years' : [2014]
+   'years' : [2011,2012,2013,2014]
   ,'var'   : 'Temperature'
   ,'site'  : 'SECOORA'
   ,'depth' : 'Sea surface'

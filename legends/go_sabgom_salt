@@ -1,0 +1,6 @@
+makecpt -D -Cbcyr.cpt -T30/37/0.1 > g.cpt
+rm -f .gmt* p.* 
+gmtset FRAME_PEN 2 BASEMAP_FRAME_RGB 51/51/51 ANNOT_FONT_SIZE_PRIMARY 7 
+psscale -D6.5i/2i/7.5c/0.5ch -Cg.cpt -B1 > p.ps 
+convert -density 400 p.ps -resize 30% -rotate 90 -trim legend.png 
+rm -f .gmt* p.* g.cpt
