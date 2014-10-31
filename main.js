@@ -222,9 +222,10 @@ function init() {
   var style = new OpenLayers.Style(
     OpenLayers.Util.applyDefaults({
        pointRadius       : 6
-      ,strokeColor       : 'rgb(56, 143, 162)'
-      ,strokeOpacity     : 0.8
-      ,fillColor         : 'rgb(56, 143, 162)'
+      ,strokeColor       : '#000000'
+      ,strokeWidth       : 1
+      ,strokeOpacity     : 0.45
+      ,fillColor         : '#ffffff'
       ,fillOpacity       : 0.3
     })
   );
@@ -355,7 +356,7 @@ function query() {
     _.each(intervals,function(i) {
       var p = catalog.model.getMap(v,depth,y,i);
       var u = makeGetMapUrl(p,bbox,600);
-      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
+      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
     });
     $('#dataTable').DataTable().row.add(td).draw();
   });
