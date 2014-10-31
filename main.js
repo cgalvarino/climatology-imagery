@@ -196,10 +196,20 @@ function init() {
 
   $('.selectpicker').selectpicker({width : 200});
 
-  var i = 0;
+  var th = [];
   _.each(['Year'].concat(catalog.intervals),function(o) {
-    $('#dataTable thead').append('<th class="text-center ' + (i == 0 ? 'yearCol' : '') + '">' + o + '</th>');
-    i++;
+    th.push('<th>' + o + '</th>');
+  });
+  $('#dataTable thead').append('<tr>' + th.join('') + '</tr>');
+
+  $('#dataTable').DataTable({
+     searching      : false
+    ,lengthChange   : false
+    ,paging         : false
+    ,info           : false
+    ,ordering       : false
+    ,sScrollY       : 1
+    ,aoColumnDefs   : [{sClass : 'alignCenter'}]
   });
 
   resizeAll();
@@ -207,10 +217,10 @@ function init() {
   var style = new OpenLayers.Style(
     OpenLayers.Util.applyDefaults({
        pointRadius       : 6
-      ,strokeColor       : '#0000ff'
+      ,strokeColor       : 'rgb(56, 143, 162)'
       ,strokeOpacity     : 0.8
-      ,fillColor         : '#0000ff'
-      ,fillOpacity       : 0.2
+      ,fillColor         : 'rgb(56, 143, 162)'
+      ,fillOpacity       : 0.3
     })
   );
   lyrQuery = new OpenLayers.Layer.Vector(
@@ -222,6 +232,7 @@ function init() {
   );
   lyrQuery.events.register('featureadded',this,function(e) {
     ctlBox.deactivate();
+    query();
   });
 
   map = new OpenLayers.Map('map',{
@@ -309,16 +320,13 @@ function niceString(a) {
 }
 
 function resizeMap() {
-  $('#map').height($(window).height() - $('#title').height() - $('#locations').position().top - $('#map').position().top - 40);
+  $('#map').height($(window).height() - $('#locations').position().top - $('#map').position().top - 40);
   map && map.updateSize();
 }
 
 function resizeAll() {
-  var fixedHeightBelowGraph = 120;
-  $('#resultsWrapper').height($(window).height() - $('#title').height() - $('#resultsWrapper').position().top - 24);
-  $('.dataTableContents').height($('#resultsWrapper').height() - 112);
-  var w = $('#dataTable tbody td').first().width();
-  $('#dataTable thead th').not(":first").width(w);
+  $('#resultsWrapper').height($(window).height() - $('#resultsWrapper').position().top - 24);
+  $('.dataTables_scrollBody').height($('#resultsWrapper').height() - 113);
   resizeMap();
 }
 
@@ -329,15 +337,15 @@ function query() {
   var intervals = catalog.intervals;
   var bbox  = lyrQuery.getDataExtent().clone().transform(proj3857,proj4326).toArray();
 
-  $('#dataTable tbody').empty();
+  $('#dataTable').DataTable().clear();
   _.each(years,function(y) {
-    var td = ['<th class="text-center yearCol">' + y + '</th>'];
+    var td = ['<td><b>' + y + '</b></td>'];
     _.each(intervals,function(i) {
       var p = catalog.model.getMap(v,depth,y,i);
       var u = makeGetMapUrl(p,bbox,150);
-      td.push('<td class="text-center"><img width=150 height=150 src="' + u + '"></td>');
+      td.push('<td><img width=150 height=150 src="' + u + '"></td>');
     });
-    $('#dataTable tbody').append('<tr>' + td.join('') + '</tr>');
+    $('#dataTable').DataTable().row.add(td).draw();
   });
 }
 

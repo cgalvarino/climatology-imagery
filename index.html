@@ -8,6 +8,7 @@
     <meta http-equiv="Pragma" content="no-cache" />
     <meta http-equiv="Expires" content="0" />
     <title>SECOORA Climatology Query</title>
+    <link rel="stylesheet" type="text/css" href="./lib/jquery/DataTables-1.10.2/media/css/jquery.dataTables.min.css"/>
     <link rel="stylesheet" type="text/css" href="./lib/bootstrap-3.1.1-dist/css/bootstrap-select.css"/>
     <link rel="stylesheet" type="text/css" href="./lib/bootstrap-3.1.1-dist/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="./lib/jquery/validator/css/bootstrapValidator.min.css">
@@ -15,6 +16,8 @@
     <script type="text/javascript" src="./lib/OpenLayers-2.12-rc2-ie10-fix/OpenLayers.js"></script>
     <script type="text/javascript" src="./lib/dateFormat.js"></script>
     <script type="text/javascript" src="./lib/jquery/jquery-1.11.1.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery/DataTables-1.10.2/media/js/jquery.dataTables.min.js"></script>
+    <script type="text/javascript" src="./lib/jquery/DataTables-1.10.2/extensions/TableTools/js/dataTables.bootstrap.js"></script>
     <script type="text/javascript" src="./lib/spin.js"></script>
     <!--[if IE]><script type="text/javascript" src="./lib/jquery/excanvas.js"></script><![endif]-->
     <script type="text/javascript" src="./lib/bootstrap-3.1.1-dist/js/bootstrap-select.js"></script>
@@ -43,8 +46,7 @@
               <div id="resultsWrapper" class="panel panel-default">
                 <div class="panel-heading">Results</div>
                 <div class="panel-body">
-                  <table id="dataTable" class="table"><thead></thead></table>
-                  <div style="overflow-y:auto" class="dataTableContents"><table id="dataTable" class="table table-striped table-hover"><tbody></tbody></table></div>
+                  <table id="dataTable" class="hover stripe row-border"><thead></thead><tbody></tbody></table>
                 </div>
               </div>
             </div>

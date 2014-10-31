@@ -98,6 +98,22 @@ body {
   color: rgb(56, 143, 162);
 }
 
-.yearCol {
-  width : 80px;
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+  border : none;
+}
+
+table.dataTable thead th, table.dataTable thead td {
+  border : none;
+}
+
+#dataTable_wrapper th {
+  text-align : center;
+}
+
+#dataTable_wrapper td {
+  text-align : center;
+}
+
+#dataTable_wrapper img {
+  border : 1px solid rgb(169, 210, 220);
 }
