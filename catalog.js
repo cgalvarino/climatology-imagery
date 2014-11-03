@@ -49,6 +49,12 @@ var catalog = {
         ,'Salinity'    : {'Sea surface' : '30,37','Sea floor' : '30,37'}
       };
 
+      var colorconversion = {
+         'Temperature' : function(v) {return Math.round(v * 9/5 + 32)}
+        ,'Salinity'    : function(v) {return Math.round(v)}
+      };
+      
+
       return {
          LAYERS          : layer
         ,STYLES          : 'boxfill/rainbow'
@@ -56,7 +62,8 @@ var catalog = {
         ,ELEVATION       : elevation
         ,TIME            : dt
         ,url             : 'http://omgsrv1.meas.ncsu.edu:8080/thredds/wms/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
-        ,legend          : ['sabgom',layer,elevation].join('.')
+        ,legend          : 'boxfill-rainbow'
+        ,colorconversion : colorconversion[v]
       };
     }
     ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}

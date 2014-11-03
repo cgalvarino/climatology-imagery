@@ -352,10 +352,14 @@ function query() {
   var legend    = 'img/blank.png';
 
   $('#dataTable').DataTable().clear();
+  var range = [];
+  var conversion;
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
     _.each(intervals,function(i) {
       var p = catalog.model.getMap(v,depth,y,i);
+      range = p.COLORSCALERANGE.split(',');
+      conversion = p.colorconversion;
       var u = makeGetMapUrl(p,bbox,600);
       td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
       legend = 'img/' + p.legend + '.png';
@@ -363,10 +367,16 @@ function query() {
     $('#dataTable').DataTable().row.add(td).draw();
   });
 
-  $('#legend img').attr('src',legend);
+  $('#legend-labels').css('background-image','url(' + legend + ')');
   var uom = _.findWhere(catalog.variables,{name : v}).uom;
   uom = uom ? '<br>(' + uom + ')' : '';
   $('#legend #text').html('<b>' + v + uom + '<br>from ' + catalog.model.name + '</b>');
+
+  $('#legend-labels').empty();
+  var dr = (Number(range[1]) - Number(range[0])) / 5;
+  for (var i = 0; i <= 5; i++) {
+    $('#legend-labels').append('<span style="left:' + (13 + i * 71) + 'px">' + conversion(Number(range[0]) + i * dr) + '</span>');
+  }
 }
 
 function makeGetMapUrl(p,bbox,size) {

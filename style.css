@@ -120,6 +120,16 @@ table.dataTable thead th, table.dataTable thead td {
 
 #legend {
   text-align : center;
-  height : 50px;
-  margin-top : 5px;
+  height : 55px;
+  margin-top : 10px;
+}
+
+#legend-labels {
+  width: 368px;
+  height: 54px;
+}
+
+#legend-labels span {
+  position: absolute;
+  bottom: 0px;
 }
