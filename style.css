@@ -63,23 +63,23 @@ body {
   background-color: #388fa2 ;
 }
 
-#coords .modal-dialog {
+.modal-dialog {
   width : 350px;
 }
 
-#coords .modal-dialog .form-group {
+.modal-dialog .form-group {
   margin-bottom : 3px;
 }
 
-#coords .modal-dialog .spacer {
+.modal-dialog .spacer {
   height : 10px;
 }
 
-#coords .modal-footer {
+.modal-footer {
   padding: 15px 0px 0px 0px;
 }
 
-#coords .form-horizontal .control-label {
+.form-horizontal .control-label {
     text-align: left;
 }
 

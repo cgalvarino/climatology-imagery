@@ -4,6 +4,7 @@ var lyrQuery;
 var ctlBox;
 var lyrCatalog = new OpenLayers.Layer.Vector();
 var map;
+var currentRange = {};
 var spinner;
 var proj3857 = new OpenLayers.Projection("EPSG:3857");
 var proj4326 = new OpenLayers.Projection("EPSG:4326");
@@ -17,6 +18,62 @@ function init() {
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');
     $('#coords').modal('hide');
+  });
+
+  $('#settings-button button').on('click',function() {
+    $('#range')
+      .bootstrapValidator({
+         excluded      : [':disabled']
+        ,feedbackIcons : {
+          valid      : 'glyphicon glyphicon-ok',
+          invalid    : 'glyphicon glyphicon-remove',
+          validating : 'glyphicon glyphicon-refresh'
+        }
+        ,fields : {
+          customMin : {
+            validators : {
+              notEmpty : {
+                message: 'This field is required.'
+              }
+              ,callback : {
+                callback : function(value,validator) {
+                  return $.isNumeric(value) && Number(value) < Number($('#customMax').val());
+                }
+              }
+            }
+          }
+          ,customMax : {
+            validators : {
+              notEmpty : {
+                message: 'This field is required.'
+              }
+              ,callback : {
+                callback : function(value,validator) {
+                  return $.isNumeric(value) && Number(value) > Number($('#customMin').val());
+                }
+              }
+            }
+          }
+        }
+      })
+      .on('shown.bs.modal', function() {
+        $('#range').bootstrapValidator('resetForm',true);
+        $('#customMin').val(currentRange.f(currentRange.v[0]));
+        $('#customMax').val(currentRange.f(currentRange.v[1]));
+      })
+      .on('error.validator.bv', function(e, data) {
+        data.element
+        // Hide all the messages
+        .find('.help-block[data-bv-for="' + data.field + '"]').hide()
+        // Show only message associated with current validator
+        .filter('[data-bv-validator="' + data.validator + '"]').show();
+      })
+      .on('success.form.bv', function(e) {
+        e.preventDefault();
+        $('#range').modal('hide');
+        query([currentRange.inv($('#customMin').val()),currentRange.inv($('#customMax').val())]);
+      })
+      .modal('show');
   });
 
   $('#new-box-button button').on('click',function() {
@@ -343,7 +400,7 @@ function resizeAll() {
   resizeMap();
 }
 
-function query() {
+function query(customRange) {
   var v         = $('#vars .active').text();
   var depth     = $('#depths .active').text()
   var years     = $('#years select').selectpicker('val');
@@ -353,14 +410,14 @@ function query() {
 
   $('#dataTable').DataTable().clear();
   var range = [];
-  var conversion;
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
     _.each(intervals,function(i) {
       var p = catalog.model.getMap(v,depth,y,i);
-      range = p.COLORSCALERANGE.split(',');
-      conversion = p.colorconversion;
-      var u = makeGetMapUrl(p,bbox,600);
+      currentRange.v = customRange ? customRange : p.COLORSCALERANGE.split(',');
+      currentRange.f = p.colorconversion;
+      currentRange.inv = p.colorinversion;
+      var u = makeGetMapUrl(p,bbox,600,customRange);
       td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="' + u.fg + '"></a></td>');
       legend = 'img/' + p.legend + '.png';
     });
@@ -373,13 +430,20 @@ function query() {
   $('#legend #text').html('<b>' + v + uom + '<br>from ' + catalog.model.name + '</b>');
 
   $('#legend-labels').empty();
-  var dr = (Number(range[1]) - Number(range[0])) / 5;
+  var dr = (Number(currentRange.v[1]) - Number(currentRange.v[0])) / 5;
   for (var i = 0; i <= 5; i++) {
-    $('#legend-labels').append('<span style="left:' + (13 + i * 71) + 'px">' + conversion(Number(range[0]) + i * dr) + '</span>');
+    var v = currentRange.f(Number(currentRange.v[0]) + i * dr);
+    if (currentRange.f(Number(currentRange.v[0]) + 5 * dr) - currentRange.f(Number(currentRange.v[0]) + 0 * dr) <= 3) {
+      v = Math.round(v * 100) / 100;
+    }
+    else {
+      v = Math.round(v);
+    }
+    $('#legend-labels').append('<span style="left:' + (13 + i * 71) + 'px">' + v + '</span>');
   }
 }
 
-function makeGetMapUrl(p,bbox,size) {
+function makeGetMapUrl(p,bbox,size,customRange) {
   // figure out the lats based on the bbox lon's & size
   var ratio = (Number(bbox[2]) - Number(bbox[0])) / size;
   var dLat  = ratio * size - Number(bbox[3]) + Number(bbox[1]);
@@ -391,7 +455,7 @@ function makeGetMapUrl(p,bbox,size) {
     ,OpenLayers.Util.getParameterString({
        LAYERS          : p['LAYERS']
       ,STYLES          : p['STYLES']
-      ,COLORSCALERANGE : p['COLORSCALERANGE']
+      ,COLORSCALERANGE : customRange ? customRange.join(',') : p['COLORSCALERANGE']
       ,ELEVATION       : p['ELEVATION']
       ,TIME            : p['TIME']
       ,WIDTH           : size

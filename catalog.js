@@ -50,10 +50,14 @@ var catalog = {
       };
 
       var colorconversion = {
-         'Temperature' : function(v) {return Math.round(v * 9/5 + 32)}
-        ,'Salinity'    : function(v) {return Math.round(v)}
+         'Temperature' : function(v) {return Number(v) * 9/5 + 32}
+        ,'Salinity'    : function(v) {return Number(v)}
       };
-      
+
+      var colorinversion = {
+         'Temperature' : function(v) {return (Number(v) - 32) / 1.8}
+        ,'Salinity'    : function(v) {return Number(v)}
+      };
 
       return {
          LAYERS          : layer
@@ -64,6 +68,7 @@ var catalog = {
         ,url             : 'http://omgsrv1.meas.ncsu.edu:8080/thredds/wms/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
         ,legend          : 'boxfill-rainbow'
         ,colorconversion : colorconversion[v]
+        ,colorinversion  : colorinversion[v]
       };
     }
     ,'descr' : {name : 'the SABGOM forecasting model',freq : 'once every three hours and a grid size of 5km'}
