@@ -101,6 +101,7 @@ function init() {
         $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
       }
     });
+    currentRange = {};
     query();
   });
 
@@ -109,7 +110,7 @@ function init() {
     $('#years select').append('<option value="' + o + '" ' + selected + '>' + o + '</option> ');
   });
   $('#years').change(function() {
-    query();
+    query(currentRange.v.slice());
   });
 
   _.each(['Sea surface','Sea floor'],function(o) {
@@ -127,6 +128,7 @@ function init() {
         $(this).removeClass('btn-custom-lighten').removeClass('active').addClass('btn-default');
       }
     });
+    currentRange = {};
     query();
   });
 
@@ -240,7 +242,7 @@ function init() {
           map.zoomToExtent(f.geometry.getBounds());
           $('#location').selectpicker('val','custom');
           $('#coords').modal('hide');
-          query();
+          query(currentRange.v.slice());
         })
         .modal('show');
     }
@@ -250,7 +252,7 @@ function init() {
       if (f) {
         lyrQuery.addFeatures([f.clone()]);
         map.zoomToExtent(f.geometry.getBounds());
-        query();
+        query(currentRange.v.slice());
       }
       $('#location').selectpicker('val','custom');
     }
@@ -295,7 +297,7 @@ function init() {
   );
   lyrQuery.events.register('featureadded',this,function(e) {
     ctlBox.deactivate();
-    query();
+    query(currentRange.v ? currentRange.v.slice() : null);
   });
 
   var bm = new OpenLayers.Layer.ArcGIS93Rest(
@@ -433,7 +435,7 @@ function query(customRange) {
   var dr = (Number(currentRange.v[1]) - Number(currentRange.v[0])) / 5;
   for (var i = 0; i <= 5; i++) {
     var v = currentRange.f(Number(currentRange.v[0]) + i * dr);
-    if (currentRange.f(Number(currentRange.v[0]) + 5 * dr) - currentRange.f(Number(currentRange.v[0]) + 0 * dr) <= 3) {
+    if (currentRange.f(Number(currentRange.v[0]) + 5 * dr) - currentRange.f(Number(currentRange.v[0]) + 0 * dr) <= 4) {
       v = Math.round(v * 100) / 100;
     }
     else {
