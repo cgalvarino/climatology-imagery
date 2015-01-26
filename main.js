@@ -106,7 +106,7 @@ function init() {
     query();
   });
 
-  _.each(catalog.intervals.sort(),function(o) {
+  _.each(catalog.intervals,function(o) {
     var selected = defaults.intervals.indexOf(o) >= 0 ? 'selected="selected"' : '';
     $('#intervals select').append('<option value="' + o + '" ' + selected + '>' + o + '</option> ');
   });
@@ -114,6 +114,7 @@ function init() {
     for (var i = 0; i < catalog.intervals.length; i++) {
       dataTable.column(i + 1).visible(_.indexOf($('#intervals select').selectpicker('val'),catalog.intervals[i]) >= 0);
     }
+    query(currentRange.v.slice());
   });
 
   _.each(catalog.years.sort(),function(o) {
@@ -466,6 +467,9 @@ function query(customRange) {
       currentRange.f = p.colorconversion;
       currentRange.inv = p.colorinversion;
       var u = makeGetMapUrl(p,bbox,600,customRange);
+      if (_.indexOf($('#intervals select').selectpicker('val'),i) < 0) {
+        u.fg = 'img/blank.png';
+      }
       td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="img/loading.gif"><img style="display:none" width=150 height=150 src="' + u.fg + '" onload="imgLoaded(this)"></a></td>');
       legend = 'img/' + p.legend + '.png';
     });
