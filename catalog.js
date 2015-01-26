@@ -1,5 +1,5 @@
 var catalog = {
-   'years'     : [2011,2012,2013,2014]
+   'years'     : [2004,2005,2006,2007,2008,2009,2010]
   ,'intervals' : ['Winter','Spring','Summer','Fall']
   ,'variables' : [
     {
@@ -26,22 +26,22 @@ var catalog = {
     ,getMap : function(v,d,year,interval) {
       var layer;
       switch(v) {
-        case 'Temperature' : layer = 'temp'; break;
-        case 'Salinity'    : layer = 'salt'; break;
+        case 'Temperature' : layer = 'temperature'; break;
+        case 'Salinity'    : layer = 'salinity'; break;
       }
 
-      var dt = '2014' + '-';
+      var dt = year + '-';
       switch(interval) {
-        case 'Winter' : dt += '10-08'; break;
-        case 'Spring' : dt += '10-15'; break;
-        case 'Summer' : dt += '10-23'; break;
-        case 'Fall'   : dt += '10-30'; break;
+        case 'Winter' : dt += '11-15'; break;
+        case 'Spring' : dt += '02-15'; break;
+        case 'Summer' : dt += '05-15'; break;
+        case 'Fall'   : dt += '08-15'; break;
       }
 
       var elevation;
       switch(d) {
-        case 'Sea surface' : elevation = '-0.013888888888888888'; break;
-        case 'Sea floor'   : elevation = '-0.986111111111111'; break;
+        case 'Sea surface' : elevation = 'surface'; break;
+        case 'Sea floor'   : elevation = 'bottom'; break;
       }
 
       var colorscalerange = {
@@ -63,9 +63,8 @@ var catalog = {
          LAYERS          : layer
         ,STYLES          : 'boxfill/rainbow'
         ,COLORSCALERANGE : colorscalerange[v][d]
-        ,ELEVATION       : elevation
         ,TIME            : dt
-        ,url             : 'http://omgsrv1.meas.ncsu.edu:8080/thredds/wms/fmrc/sabgom/SABGOM_Forecast_Model_Run_Collection_best.ncd'
+        ,url             : 'http://129.252.139.124/thredds/wms/sabgom_3_month_avg_by_year/' + layer + '_' + elevation + '_year.nc'
         ,legend          : 'boxfill-rainbow'
         ,colorconversion : colorconversion[v]
         ,colorinversion  : colorinversion[v]
@@ -76,7 +75,7 @@ var catalog = {
 };
 
 var defaults = {
-   'years' : [2011,2012,2013,2014]
+   'years' : [2004,2005]
   ,'var'   : 'Temperature'
   ,'site'  : 'SECOORA'
   ,'depth' : 'Sea surface'
