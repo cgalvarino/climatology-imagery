@@ -8,6 +8,7 @@ var currentRange = {};
 var spinner;
 var proj3857 = new OpenLayers.Projection("EPSG:3857");
 var proj4326 = new OpenLayers.Projection("EPSG:4326");
+var dataTable;
 
 function init() {
   $('#buoyTT').html(verbiage.buoyTT.a);
@@ -103,6 +104,16 @@ function init() {
     });
     currentRange = {};
     query();
+  });
+
+  _.each(catalog.intervals.sort(),function(o) {
+    var selected = defaults.intervals.indexOf(o) >= 0 ? 'selected="selected"' : '';
+    $('#intervals select').append('<option value="' + o + '" ' + selected + '>' + o + '</option> ');
+  });
+  $('#intervals').change(function() {
+    for (var i = 0; i < catalog.intervals.length; i++) {
+      dataTable.column(i + 1).visible(_.indexOf($('#intervals select').selectpicker('val'),catalog.intervals[i]) >= 0);
+    }
   });
 
   _.each(catalog.years.sort(),function(o) {
@@ -266,7 +277,7 @@ function init() {
   });
   $('#dataTable thead').append('<tr>' + th.join('') + '</tr>');
 
-  $('#dataTable').DataTable({
+  dataTable = $('#dataTable').DataTable({
      searching      : false
     ,lengthChange   : false
     ,paging         : false
@@ -368,7 +379,38 @@ function hideSpinner() {
   }
 }
 
-function niceString(a) {
+function niceSeasonRange(a) {
+  if (a.length == catalog.intervals.length) {
+    return 'ALL';
+  }
+  else {
+    return a.length > 0 ? a.join(', ') : 'Nothing selected';
+  }
+
+  // The following code may be used if dealing w/ intervals other than seasons.
+  var aBands = [];
+  _.each(a,function(o) {
+    if (aBands.length > 0 && aBands[aBands.length - 1][aBands[aBands.length - 1].length - 1] == catalog.intervals[_.indexOf(catalog.intervals,o) - 1]) {
+      aBands[aBands.length - 1].push(o);
+    }
+    else {
+      aBands.push([o]);
+    }
+  });
+  var aOut = [];
+  _.each(aBands,function(o) {
+    if (o.length == 1) {
+      aOut.push(o);
+    }
+    else {
+      aOut.push(o[0] + '-' + o[o.length - 1]);
+    }
+  });
+
+  return aOut.length > 0 ? aOut.join(', ') : 'Nothing selected';
+}
+
+function niceNumericRange(a) {
   var aBands = [];
   _.each(a,function(o) {
     if (aBands.length > 0 && aBands[aBands.length - 1][aBands[aBands.length - 1].length - 1] == o - 1) {
@@ -414,7 +456,7 @@ function query(customRange) {
   var bbox      = lyrQuery.getDataExtent().toArray();
   var legend    = 'img/blank.png';
 
-  $('#dataTable').DataTable().clear();
+  dataTable.clear();
   var range = [];
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
@@ -427,7 +469,7 @@ function query(customRange) {
       td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="img/loading.gif"><img style="display:none" width=150 height=150 src="' + u.fg + '" onload="imgLoaded(this)"></a></td>');
       legend = 'img/' + p.legend + '.png';
     });
-    $('#dataTable').DataTable().row.add(td).draw();
+    dataTable.row.add(td).draw();
   });
 
   $('#legend-labels').css('background-image','url(' + legend + ')');

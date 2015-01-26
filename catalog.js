@@ -75,10 +75,11 @@ var catalog = {
 };
 
 var defaults = {
-   'years' : [2004,2005]
-  ,'var'   : 'Temperature'
-  ,'site'  : 'SECOORA'
-  ,'depth' : 'Sea surface'
+   'intervals' : ['Winter','Spring','Summer','Fall']
+  ,'years'     : [2004,2005]
+  ,'var'       : 'Temperature'
+  ,'site'      : 'SECOORA'
+  ,'depth'     : 'Sea surface'
 };
 
 var verbiage = {

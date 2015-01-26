@@ -77,11 +77,19 @@
                 <div class="panel-body"></div>
               </div>
             </div>
+            <div id="intervals" class="col-md-12">
+              <div class="panel panel-default">
+                <div class="panel-heading">Seasons</div>
+                <div class="panel-body">
+                  <select id="interval" name="interval" class="selectpicker" multiple data-selected-text-format="static" title="niceSeasonRange(selectedItems)" data-style="btn-custom-lighten active"></select>
+                </div>
+              </div>
+            </div>
             <div id="years" class="col-md-12">
               <div class="panel panel-default">
                 <div class="panel-heading">Years</div>
                 <div class="panel-body">
-                  <select id="year" name="year" class="selectpicker" multiple data-selected-text-format="static" title="niceString(selectedItems)" data-style="btn-custom-lighten active"></select>
+                  <select id="year" name="year" class="selectpicker" multiple data-selected-text-format="static" title="niceNumericRange(selectedItems)" data-style="btn-custom-lighten active"></select>
                 </div>
               </div>
             </div>
