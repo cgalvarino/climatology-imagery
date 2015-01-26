@@ -140,32 +140,3 @@ table.dataTable thead th, table.dataTable thead td {
   top: 5px;
   right: 30px;
 }
-
-.img_wrapper{
-    position: relative;
-    background: url(img/loading.gif) no-repeat center;
-    overflow: hidden;
-    width: 150px;
-    height: 150px;
-}
-
-.img_wrapper img{
-    position: absolute;
-    width: 100%;
-    top: 0;
-    left: 0;
-    opacity: 0;
-  
-    -webkit-transition: opacity .5s;
-    -moz-transition: opacity .5s;
-    -ms-transition: opacity .5s;
-    transition: opacity .5s;
-}
-
-.img_wrapper.loaded img{
-    opacity: 1;
-}
-
-.img_wrapper.loaded .css_spinner{
-    display: none;
-}

@@ -403,7 +403,7 @@ function resizeAll() {
 }
 
 function imgLoaded(img) {
-  $(img).parent().addClass('loaded').css('background','none');
+  $(img).show().siblings().hide();
 }
 
 function query(customRange) {
@@ -424,7 +424,7 @@ function query(customRange) {
       currentRange.f = p.colorconversion;
       currentRange.inv = p.colorinversion;
       var u = makeGetMapUrl(p,bbox,600,customRange);
-      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><div class="img_wrapper"><img src="' + u.fg + '" onload="imgLoaded(this)"></div></a></td>');
+      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="img/loading.gif"><img style="display:none" width=150 height=150 src="' + u.fg + '" onload="imgLoaded(this)"></a></td>');
       legend = 'img/' + p.legend + '.png';
     });
     $('#dataTable').DataTable().row.add(td).draw();
