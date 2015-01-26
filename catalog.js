@@ -45,8 +45,8 @@ var catalog = {
       }
 
       var colorscalerange = {
-         'Temperature' : {'Sea surface' : '20,35','Sea floor' : '0,10'}
-        ,'Salinity'    : {'Sea surface' : '30,37','Sea floor' : '30,37'}
+         'Temperature' : {'Sea surface' : '10,31','Sea floor' : '0,31'}
+        ,'Salinity'    : {'Sea surface' : '32,37','Sea floor' : '32,37'}
       };
 
       var colorconversion = {
