@@ -121,7 +121,7 @@ var catalog = {
 
 var defaults = {
    'intervals' : ['Winter','Spring','Summer','Fall']
-  ,'years'     : [2004]
+  ,'years'     : [2004,2005,2006,2007,2008,2009,2010]
   ,'var'       : 'Temperature'
   ,'site'      : 'SECOORA'
   ,'queryPt'   : 'POINT(-83 25)'
