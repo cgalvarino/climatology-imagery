@@ -124,6 +124,7 @@ var defaults = {
   ,'years'     : [2004]
   ,'var'       : 'Temperature'
   ,'site'      : 'SECOORA'
+  ,'queryPt'   : 'POINT(-83 25)'
   ,'depth'     : 'Sea surface'
 };
 

@@ -118,6 +118,11 @@ table.dataTable thead th, table.dataTable thead td {
   border : 1px solid rgb(169, 210, 220);
 }
 
+#dataTable_wrapper .query-marker {
+  border : none;
+  margin-bottom : 3px;
+}
+
 .margin-bottom {
   margin-bottom: 10px;
 }

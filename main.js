@@ -1,5 +1,6 @@
 var prevPoint;
 var plotData = [];
+var lyrBbox;
 var lyrQuery;
 var ctlBox;
 var lyrCatalog = new OpenLayers.Layer.Vector();
@@ -229,8 +230,8 @@ function init() {
         })
         .on('shown.bs.modal', function() {
           $('#coords').bootstrapValidator('resetForm',true);
-          if (lyrQuery.features.length > 0) {
-            var bounds = lyrQuery.getDataExtent().clone().transform(proj3857,proj4326).toArray();
+          if (lyrBbox.features.length > 0) {
+            var bounds = lyrBbox.getDataExtent().clone().transform(proj3857,proj4326).toArray();
             $('#customMinLon').val(Math.round(bounds[0] * 10000) / 10000);
             $('#customMinLat').val(Math.round(bounds[1] * 10000) / 10000);
             $('#customMaxLon').val(Math.round(bounds[2] * 10000) / 10000);
@@ -246,11 +247,11 @@ function init() {
         })
         .on('success.form.bv', function(e) {
           e.preventDefault();
-          lyrQuery.removeAllFeatures();
+          lyrBbox.removeAllFeatures();
           var f = new OpenLayers.Feature.Vector(
             new OpenLayers.Bounds($('#customMinLon').val(),$('#customMinLat').val(),$('#customMaxLon').val(),$('#customMaxLat').val()).toGeometry().transform(proj4326,proj3857)
           );
-          lyrQuery.addFeatures([f]);
+          lyrBbox.addFeatures([f]);
           map.zoomToExtent(f.geometry.getBounds());
           $('#location').selectpicker('val','custom');
           $('#coords').modal('hide');
@@ -259,10 +260,10 @@ function init() {
         .modal('show');
     }
     else {
-      lyrQuery.removeAllFeatures();
+      lyrBbox.removeAllFeatures();
       var f = _.find(lyrCatalog.features,function(o){return o.attributes.name == val});
       if (f) {
-        lyrQuery.addFeatures([f.clone()]);
+        lyrBbox.addFeatures([f.clone()]);
         map.zoomToExtent(f.geometry.getBounds());
         query(currentRange.v.slice());
       }
@@ -300,14 +301,14 @@ function init() {
       ,fillOpacity       : 0.3
     })
   );
-  lyrQuery = new OpenLayers.Layer.Vector(
-     'Query points'
+  lyrBbox = new OpenLayers.Layer.Vector(
+     'AOI'
     ,{styleMap : new OpenLayers.StyleMap({
        'default'   : style
       ,'select'    : style
     })}
   );
-  lyrQuery.events.register('featureadded',this,function(e) {
+  lyrBbox.events.register('featureadded',this,function(e) {
     ctlBox.deactivate();
     query(currentRange.v ? currentRange.v.slice() : null);
   });
@@ -317,6 +318,23 @@ function init() {
     ,"http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/export"
   );
   bm.params.FORMAT = "jpg";
+
+  var style = new OpenLayers.Style(
+    OpenLayers.Util.applyDefaults({
+       pointRadius       : 8
+      ,strokeColor       : '#000000'
+      ,strokeOpacity     : 0.8
+      ,fillColor         : '#ff0000'
+      ,fillOpacity       : 0.8
+    })
+  );
+  lyrQuery = new OpenLayers.Layer.Vector(
+     'Query points'
+    ,{styleMap : new OpenLayers.StyleMap({
+       'default' : style
+      ,'select'  : style
+    })}
+  );
 
   map = new OpenLayers.Map('map',{
     layers  : [
@@ -329,6 +347,7 @@ function init() {
           ,wrapDateLine      : true
         }
       )
+      ,lyrBbox
       ,lyrQuery
     ]
     ,projection : proj3857
@@ -337,17 +356,31 @@ function init() {
     map.zoomToExtent(new OpenLayers.Bounds(-101,13,-68,40).transform(proj4326,proj3857));
   },100);
 
-  ctlBox = new OpenLayers.Control.DrawFeature(lyrQuery,OpenLayers.Handler.RegularPolygon);
+  map.events.register('click',this,function(e) {
+    lyrQuery.removeAllFeatures();
+    var lonLat = map.getLonLatFromPixel(e.xy);
+    var f = new OpenLayers.Feature.Vector(
+      new OpenLayers.Geometry.Point(lonLat.lon,lonLat.lat)
+    );
+    lyrQuery.addFeatures([f]);
+    query(currentRange.v.slice());
+  });
+
+  ctlBox = new OpenLayers.Control.DrawFeature(lyrBbox,OpenLayers.Handler.RegularPolygon);
   ctlBox.handler.setOptions({irregular : true});
   map.addControl(ctlBox);
   ctlBox.events.register('activate',this,function(e) {
-    lyrQuery.removeAllFeatures();
+    lyrBbox.removeAllFeatures();
   });
+
+  var f = wkt.read(defaults.queryPt);
+  f.geometry.transform(proj4326,proj3857);
+  lyrQuery.addFeatures([f.clone()]);
 
   var f = _.find(lyrCatalog.features,function(o) {
     return o.attributes.name == defaults.site;
   });
-  lyrQuery.addFeatures([f.clone()]);
+  lyrBbox.addFeatures([f.clone()]);
 }
 
 function showSpinner() {
@@ -454,15 +487,16 @@ function query(customRange) {
   var depth     = $('#depths .active').text()
   var years     = $('#years select').selectpicker('val');
   var intervals = _.map(catalog.intervals.labels,function(o){return o[0]});
-  var bbox      = lyrQuery.getDataExtent().toArray();
+  var bbox      = lyrBbox.getDataExtent().toArray();
   var legend    = 'img/blank.png';
 
-  var lon = -83;
-  var lat = 25;
+  var geom = lyrQuery.features[0].geometry.clone().transform(proj3857,proj4326);
+  var lon  = geom.x;
+  var lat  = geom.y;
 
   dataTable.clear();
 
-  var td = ['<td>' + '<button type="button" class="btn btn-default btn-sm margin-bottom"><span class="glyphicon glyphicon-plus-sign aqua"></span> New query</button></div><br>Click \'New query\' to look for seasonal trends at a particular location.' + '</td>'];
+  var td = ['<td>' + '<b>Query location<br><span id="queryCoords"></span></b><br>' + '<img class="query-marker" width=19 height=18 src="img/red_dot.png">' + '<br>Click anywhere on the map to change.</td>'];
   _.each(intervals,function(i) {
     var img = {id : 'foo',src: 'img/blank.png'};
     if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0 && years) {
@@ -474,6 +508,11 @@ function query(customRange) {
     td.push('<td><img id="' + img.id + '" width=150 height=150 src="' + img.src + '"></td>'); 
   });
   dataTable.row.add(td).draw();
+
+  $('#queryCoords').html([
+     (Math.round(lat * 100) / 100) + ' N'
+    ,(Math.round(lon * 100) / 100) + ' E'
+  ].join(', '));
 
   var getObs = catalog.model.getObs(v,depth,lon,lat);
   $.ajax({
