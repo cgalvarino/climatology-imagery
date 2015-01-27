@@ -4,11 +4,28 @@ var catalog = {
   ,'variables' : [
     {
        name : 'Temperature'
-      ,uom  : 'degrees Fahrenheit'
+      ,uom  : function(u,o) { 
+        if (u == 'static') {
+          return 'degrees Fahrenheit';
+        }
+        if (/celsius/i.test(u)) {
+          return {label : 'Fahrenheit',value : o * 1.8 + 32};
+        }
+        else {
+          return {label : u,value : o};
+        }
+      }
     }
     ,{
        name : 'Salinity'
-      ,uom  : false
+      ,uom  : function(u,o) {
+        if (u == 'static') {
+          return false;
+        } 
+        else {
+          return {label : u,value : o};
+        }
+      }
     }
   ]
   ,'sites' : {
@@ -23,6 +40,24 @@ var catalog = {
   }
   ,'model' : {
      name   : 'SABGOM'
+    ,getObs : function(v,d,lon,lat) {
+      var layer;
+      switch(v) {
+        case 'Temperature' : layer = 'temperature'; break;
+        case 'Salinity'    : layer = 'salinity'; break;
+      }
+
+      var elevation;
+      switch(d) {
+        case 'Sea surface' : elevation = 'surface'; break;
+        case 'Sea floor'   : elevation = 'bottom'; break;
+      }
+
+      return {
+         u : 'http://129.252.139.124/thredds/ncss/grid/sabgom_3_month_avg_by_year/' + layer + '_' + elevation + '_year.nc?var=' + layer + '&latitude=' + lat + '&longitude=' + lon + '&time_start=2004-02-15T00:00:00Z&time_end=2010-11-15T00:00:00Z&accept=xml'
+        ,v : layer
+      };
+    }
     ,getMap : function(v,d,year,interval) {
       var layer;
       switch(v) {

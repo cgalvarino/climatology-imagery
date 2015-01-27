@@ -459,12 +459,25 @@ function query(customRange) {
 
   dataTable.clear();
 
+/*
+  var getObs = catalog.model.getObs(v,depth,-83,25);
+  $.ajax({
+     url     : getObs.u
+    ,v       : getObs.v
+    ,uom     : _.findWhere(catalog['variables'],{name : v}).uom
+    ,success : function(r) {
+      var data = processData($(r),this.v,this.uom);
+      console.dir(data);
+    }
+  });
+*/
+
   var yrs = _.map(years,function(o){return String(o).substr(2,2)});
   var td = ['<td>' + '<button type="button" class="btn btn-default btn-sm margin-bottom"><span class="glyphicon glyphicon-plus-sign aqua"></span> New query</button></div><br>Click above to look for seasonal trends at a particular location.' + '</td>'];
   _.each(intervals,function(i) {
     var vals = _.map(years,function(o){return Math.round(o / 10 * Math.random() * 10) / 10});
     var img = 'img/blank.png';
-    if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0) {
+    if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0 && years) {
       img = 'https://chart.googleapis.com/chart?chxt=x,y&cht=bvs&chd=t:' + vals.join(',') + '&chds=' + (_.min(vals) * 0.85) + ',' + (_.max(vals) * 1.15) + '&chco=a9d2dc&chs=150x150&chxl=0:|' + yrs.join('|') + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=15';
     }
     td.push('<td><img width=150 height=150 src="' + img + '"></td>'); 
@@ -489,7 +502,7 @@ function query(customRange) {
   });
 
   $('#legend-labels').css('background-image','url(' + legend + ')');
-  var uom = _.findWhere(catalog.variables,{name : v}).uom;
+  var uom = _.findWhere(catalog.variables,{name : v}).uom('static');
   uom = uom ? '<br>(' + uom + ')' : '';
   $('#legend #text').html('<b>' + v + uom + '<br>from ' + catalog.model.name + '</b>');
 
@@ -552,6 +565,49 @@ function makeGetMapUrl(p,bbox,size,customRange) {
   );
 
   return {fg : fg,bm : bm};
+}
+
+function processData($xml,v,uom) {
+  var d = {
+    data : []
+  };
+  var ncss = $xml.find('point');
+  if (ncss.length > 0) { // NetcdfSubset response
+    ncss.each(function() {
+      var point = $(this);
+      var u     = point.find('[name=' + v + ']').attr('units');
+      d.uom = uom(u).label;
+      var t = point.find('[name=date]').text();
+      d.data.push([
+         isoDateToDate(t)
+        ,uom(u,point.find('[name=' + v + ']').text()).value
+      ]);
+    });
+  }
+
+  var vals = _.groupBy(d.data,function(o) {
+    return o[0].getUTCMonth();
+  });
+}
+
+function isoDateToDate(s) {
+  // 2010-01-01T00:00:00 or 2010-01-01 00:00:00
+  s = s.replace("\n",'');
+  var p = s.split(/T| /);
+  if (p.length == 2) {
+    var ymd = p[0].split('-');
+    var hm = p[1].split(':');
+    return new Date(Date.UTC(
+       ymd[0]
+      ,ymd[1] - 1
+      ,ymd[2]
+      ,hm[0]
+      ,hm[1]
+    ));
+  }
+  else {
+    return false;
+  }
 }
 
 window.onresize = resizeAll;
