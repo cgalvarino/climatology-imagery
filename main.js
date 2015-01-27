@@ -106,13 +106,13 @@ function init() {
     query();
   });
 
-  _.each(catalog.intervals,function(o) {
+  _.each(_.map(catalog.intervals.labels,function(o){return o[0]}),function(o) {
     var selected = defaults.intervals.indexOf(o) >= 0 ? 'selected="selected"' : '';
     $('#intervals select').append('<option value="' + o + '" ' + selected + '>' + o + '</option> ');
   });
   $('#intervals').change(function() {
-    for (var i = 0; i < catalog.intervals.length; i++) {
-      dataTable.column(i + 1).visible(_.indexOf($('#intervals select').selectpicker('val'),catalog.intervals[i]) >= 0);
+    for (var i = 0; i < _.map(catalog.intervals.labels,function(o){return o[0]}).length; i++) {
+      dataTable.column(i + 1).visible(_.indexOf($('#intervals select').selectpicker('val'),_.map(catalog.intervals.labels,function(o){return o[0]})[i]) >= 0);
     }
     query(currentRange.v.slice());
   });
@@ -273,7 +273,7 @@ function init() {
   $('.selectpicker').selectpicker({width : 200});
 
   var th = [];
-  _.each(['Year'].concat(catalog.intervals),function(o) {
+  _.each(['Year'].concat(_.map(catalog.intervals.labels,function(o){return o[0]})),function(o) {
     th.push('<th>' + o + '</th>');
   });
   $('#dataTable thead').append('<tr>' + th.join('') + '</tr>');
@@ -381,7 +381,7 @@ function hideSpinner() {
 }
 
 function niceSeasonRange(a) {
-  if (a.length == catalog.intervals.length) {
+  if (a.length == _.map(catalog.intervals.labels,function(o){return o[0]}).length) {
     return 'ALL';
   }
   else {
@@ -391,7 +391,7 @@ function niceSeasonRange(a) {
   // The following code may be used if dealing w/ intervals other than seasons.
   var aBands = [];
   _.each(a,function(o) {
-    if (aBands.length > 0 && aBands[aBands.length - 1][aBands[aBands.length - 1].length - 1] == catalog.intervals[_.indexOf(catalog.intervals,o) - 1]) {
+    if (aBands.length > 0 && aBands[aBands.length - 1][aBands[aBands.length - 1].length - 1] == _.map(catalog.intervals.labels,function(o){return o[0]})[_.indexOf(_.map(catalog.intervals.labels,function(o){return o[0]}),o) - 1]) {
       aBands[aBands.length - 1].push(o);
     }
     else {
@@ -453,36 +453,69 @@ function query(customRange) {
   var v         = $('#vars .active').text();
   var depth     = $('#depths .active').text()
   var years     = $('#years select').selectpicker('val');
-  var intervals = catalog.intervals;
+  var intervals = _.map(catalog.intervals.labels,function(o){return o[0]});
   var bbox      = lyrQuery.getDataExtent().toArray();
   var legend    = 'img/blank.png';
 
+  var lon = -83;
+  var lat = 25;
+
   dataTable.clear();
 
-/*
-  var getObs = catalog.model.getObs(v,depth,-83,25);
-  $.ajax({
-     url     : getObs.u
-    ,v       : getObs.v
-    ,uom     : _.findWhere(catalog['variables'],{name : v}).uom
-    ,success : function(r) {
-      var data = processData($(r),this.v,this.uom);
-      console.dir(data);
-    }
-  });
-*/
-
-  var yrs = _.map(years,function(o){return String(o).substr(2,2)});
   var td = ['<td>' + '<button type="button" class="btn btn-default btn-sm margin-bottom"><span class="glyphicon glyphicon-plus-sign aqua"></span> New query</button></div><br>Click above to look for seasonal trends at a particular location.' + '</td>'];
   _.each(intervals,function(i) {
-    var vals = _.map(years,function(o){return Math.round(o / 10 * Math.random() * 10) / 10});
-    var img = 'img/blank.png';
+    var img = {id : 'foo',src: 'img/blank.png'};
     if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0 && years) {
-      img = 'https://chart.googleapis.com/chart?chxt=x,y&cht=bvs&chd=t:' + vals.join(',') + '&chds=' + (_.min(vals) * 0.85) + ',' + (_.max(vals) * 1.15) + '&chco=a9d2dc&chs=150x150&chxl=0:|' + yrs.join('|') + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=15';
+      img = {
+         id  : [v,depth,lon,lat,i].join('-')
+        ,src : 'img/loading.gif'
+      };
     }
-    td.push('<td><img width=150 height=150 src="' + img + '"></td>'); 
+    td.push('<td><img id="' + img.id + '" width=150 height=150 src="' + img.src + '"></td>'); 
   });
   dataTable.row.add(td).draw();
+
+  var getObs = catalog.model.getObs(v,depth,lon,lat);
+  $.ajax({
+     url       : getObs.u
+    ,v         : getObs.v
+    ,vstr      : v
+    ,uom       : _.findWhere(catalog['variables'],{name : v}).uom
+    ,depth     : depth
+    ,lon       : lon
+    ,lat       : lat
+    ,years     : years 
+    ,intervals : _.intersection(intervals,$('#intervals select').selectpicker('val'))
+    ,success : function(r) {
+      var charts = [];
+      var data = processData($(r),this.v,this.uom,this.vstr,this.depth,this.lon,this.lat,this.years);
+      _.each(intervals,function(i) {
+        // find the bucket
+        var idx = _.find(catalog.intervals.labels,function(o){return o[0] == i})[1];
+        // pull out the data from the year(s) of interest
+        var d = _.map(
+          _.filter(data.data[idx],function(o){return _.indexOf(data.years,String(o[0].getFullYear())) >= 0})
+          ,function(o){return Math.round(o[1] * 10) / 10}
+        );
+        var id = [data.vstr,data.depth,data.lon,data.lat,i].join('-');
+        charts.push([id,d]);
+      });
+      var allVals = _.flatten(_.map(charts,function(o){return o[1]}));
+      var minVal  = _.min(allVals);
+      var maxVal  = _.max(allVals);
+      var yrsStr  = _.map(data.years,function(o){return String(o).substr(2,2)});
+      _.each(charts,function(o) {
+        $('[id="' + o[0] + '"]').attr(
+           'src'
+          ,'https://chart.googleapis.com/chart?chxt=x,y&cht=bvs&chd=t:'
+            + o[1].join(',')
+            + '&chds=' + (minVal * 0.85) + ',' + (maxVal * 1.15)
+            + '&chco=a9d2dc&chs=150x150&chxl=0:|' + yrsStr.join('|')
+            + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=15'
+        );
+      });
+    }
+  });
 
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
@@ -567,9 +600,14 @@ function makeGetMapUrl(p,bbox,size,customRange) {
   return {fg : fg,bm : bm};
 }
 
-function processData($xml,v,uom) {
+function processData($xml,v,uom,vstr,depth,lon,lat,years) {
   var d = {
-    data : []
+     data  : []
+    ,vstr  : vstr
+    ,depth : depth
+    ,lon   : lon
+    ,lat   : lat
+    ,years : years
   };
   var ncss = $xml.find('point');
   if (ncss.length > 0) { // NetcdfSubset response
@@ -585,9 +623,11 @@ function processData($xml,v,uom) {
     });
   }
 
-  var vals = _.groupBy(d.data,function(o) {
-    return o[0].getUTCMonth();
+  d.data = _.groupBy(d.data,function(o) {
+    return catalog.intervals.fromDate(o[0]);
   });
+
+  return d; 
 }
 
 function isoDateToDate(s) {

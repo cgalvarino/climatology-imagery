@@ -1,6 +1,16 @@
 var catalog = {
    'years'     : [2004,2005,2006,2007,2008,2009,2010]
-  ,'intervals' : ['Winter','Spring','Summer','Fall']
+  ,'intervals' : {
+    labels     : [
+       ['Winter',11]
+      ,['Spring',02]
+      ,['Summer',05]
+      ,['Fall'  ,08]
+    ]
+    ,fromDate : function(d) {
+      return d.getUTCMonth() + 1; 
+    }
+  }
   ,'variables' : [
     {
        name : 'Temperature'
