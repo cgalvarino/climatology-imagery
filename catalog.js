@@ -76,7 +76,7 @@ var catalog = {
 
 var defaults = {
    'intervals' : ['Winter','Spring','Summer','Fall']
-  ,'years'     : [2004,2005]
+  ,'years'     : [2004]
   ,'var'       : 'Temperature'
   ,'site'      : 'SECOORA'
   ,'depth'     : 'Sea surface'

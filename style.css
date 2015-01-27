@@ -118,6 +118,10 @@ table.dataTable thead th, table.dataTable thead td {
   border : 1px solid rgb(169, 210, 220);
 }
 
+.margin-bottom {
+  margin-bottom: 10px;
+}
+
 #legend {
   text-align : center;
   min-height : 55px;

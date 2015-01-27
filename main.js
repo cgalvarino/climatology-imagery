@@ -458,7 +458,19 @@ function query(customRange) {
   var legend    = 'img/blank.png';
 
   dataTable.clear();
-  var range = [];
+
+  var yrs = _.map(years,function(o){return String(o).substr(2,2)});
+  var td = ['<td>' + '<button type="button" class="btn btn-default btn-sm margin-bottom"><span class="glyphicon glyphicon-plus-sign aqua"></span> New query</button></div><br>Click above to look for seasonal trends at a particular location.' + '</td>'];
+  _.each(intervals,function(i) {
+    var vals = _.map(years,function(o){return Math.round(o / 10 * Math.random() * 10) / 10});
+    var img = 'img/blank.png';
+    if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0) {
+      img = 'https://chart.googleapis.com/chart?chxt=x,y&cht=bvs&chd=t:' + vals.join(',') + '&chds=' + (_.min(vals) * 0.85) + ',' + (_.max(vals) * 1.15) + '&chco=a9d2dc&chs=150x150&chxl=0:|' + yrs.join('|') + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=15';
+    }
+    td.push('<td><img width=150 height=150 src="' + img + '"></td>'); 
+  });
+  dataTable.row.add(td).draw();
+
   _.each(years,function(y) {
     var td = ['<td><b>' + y + '</b></td>'];
     _.each(intervals,function(i) {
