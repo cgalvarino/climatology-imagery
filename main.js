@@ -562,7 +562,7 @@ function query(customRange) {
             // supporting up to 12 custom colors
             + '&chco=8dd3c7|ffffb3|bebada|fb8072|80b1d3|fdb462|b3de69|fccde5|d9d9d9|bc80bd|ccebc5|ffed6f'
             + '&chs=150x150&chxl=0:|' + yrsStr.join('|')
-            + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=15'
+            + '&chxs=0,808080,12,0,_|1,000000,0,0,_&chm=N,333333,0,,9&chbh=16'
         );
       });
     }
