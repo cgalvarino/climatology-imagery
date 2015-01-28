@@ -691,4 +691,15 @@ function isoDateToDate(s) {
   }
 }
 
+function getSnapshot() {
+  // this is a helper function to simply list all the images in the matrix
+  var img = [];
+  $.each($('#dataTable img'),function() {
+    if ($(this).attr('src').indexOf('tds') >= 0) {
+      img.push($(this).attr('src'));
+    }
+  })
+  $('#intro').html(img.join(' '));
+}
+
 window.onresize = resizeAll;

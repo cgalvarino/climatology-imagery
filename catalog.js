@@ -75,6 +75,12 @@ var catalog = {
         case 'Salinity'    : layer = 'salinity'; break;
       }
 
+      var tds_layer;
+      switch(v) {
+        case 'Temperature' : tds_layer = 'temp'; break;
+        case 'Salinity'    : tds_layer = 'salinity'; break;
+      }
+
       var dt = year + '-';
       switch(interval) {
         case 'Winter' : dt += '11-15'; break;
@@ -109,7 +115,7 @@ var catalog = {
         ,STYLES          : 'boxfill/rainbow'
         ,COLORSCALERANGE : colorscalerange[v][d]
         ,TIME            : dt
-        ,url             : 'http://129.252.139.124/thredds/wms/sabgom_3_month_avg_by_year/' + layer + '_' + elevation + '_year.nc'
+        ,url             : 'http://tds.secoora.org/ncWMS/wms?LAYERS=sabgom_clim_' + tds_layer + '_' + elevation + '_year/' + layer
         ,legend          : 'boxfill-rainbow'
         ,colorconversion : colorconversion[v]
         ,colorinversion  : colorinversion[v]
