@@ -525,10 +525,20 @@ function query(customRange) {
     ,lat       : lat
     ,years     : years 
     ,intervals : _.intersection(intervals,$('#intervals select').selectpicker('val'))
+    ,error   : function() {
+      var that = this;
+      _.each(that.intervals,function(i) {
+         var id = [that.vstr,that.depth,that.lon,that.lat,i].join('-');
+         $('[id="' + id + '"]').attr(
+            'src'
+           ,'img/warning.png'
+         );
+      });
+    }
     ,success : function(r) {
       var charts = [];
       var data = processData($(r),this.v,this.uom,this.vstr,this.depth,this.lon,this.lat,this.years);
-      _.each(intervals,function(i) {
+      _.each(this.intervals,function(i) {
         // find the bucket
         var idx = _.find(catalog.intervals.labels,function(o){return o[0] == i})[1];
         // pull out the data from the year(s) of interest
