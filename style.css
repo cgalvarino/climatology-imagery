@@ -75,7 +75,7 @@ body {
   height : 10px;
 }
 
-.modal-footer {
+#coords .modal-footer,#range .modal-footer {
   padding: 15px 0px 0px 0px;
 }
 
