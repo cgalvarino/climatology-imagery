@@ -232,9 +232,9 @@ function init() {
           $('#coords').bootstrapValidator('resetForm',true);
           if (lyrBbox.features.length > 0) {
             var bounds = lyrBbox.getDataExtent().clone().transform(proj3857,proj4326).toArray();
-            $('#customMinLon').val(Math.round(bounds[0] * 10000) / 10000);
+            $('#customMinLon').val(Math.round(bounds[0] * 10000) / -10000);
             $('#customMinLat').val(Math.round(bounds[1] * 10000) / 10000);
-            $('#customMaxLon').val(Math.round(bounds[2] * 10000) / 10000);
+            $('#customMaxLon').val(Math.round(bounds[2] * 10000) / -10000);
             $('#customMaxLat').val(Math.round(bounds[3] * 10000) / 10000);
           }
         })
@@ -249,7 +249,7 @@ function init() {
           e.preventDefault();
           lyrBbox.removeAllFeatures();
           var f = new OpenLayers.Feature.Vector(
-            new OpenLayers.Bounds($('#customMinLon').val(),$('#customMinLat').val(),$('#customMaxLon').val(),$('#customMaxLat').val()).toGeometry().transform(proj4326,proj3857)
+            new OpenLayers.Bounds($('#customMinLon').val() * -1,$('#customMinLat').val(),$('#customMaxLon').val() * -1,$('#customMaxLat').val()).toGeometry().transform(proj4326,proj3857)
           );
           lyrBbox.addFeatures([f]);
           map.zoomToExtent(f.geometry.getBounds());
@@ -511,7 +511,7 @@ function query(customRange) {
 
   $('#queryCoords').html([
      (Math.round(lat * 100) / 100) + ' N'
-    ,(Math.round(lon * 100) / 100) + ' E'
+    ,(Math.round(lon * 100) / -100) + ' W'
   ].join(', '));
 
   var getObs = catalog.model.getObs(v,depth,lon,lat);
