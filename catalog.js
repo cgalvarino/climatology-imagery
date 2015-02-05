@@ -136,4 +136,5 @@ var defaults = {
 
 var verbiage = {
   'customCoordinates' : 'The SABGOM model domain is 13-40 latitude (degrees North) and 101-68 longitude (degrees West).'
+  ,'resultsTitle' : 'SECOORA SABGOM 2004-2010 Hindcast Model Seasonal Climatologies'
 };

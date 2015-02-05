@@ -13,6 +13,7 @@ var dataTable;
 
 function init() {
   $('#verbiageCustomCoordinates').html(verbiage.customCoordinates);
+  $('#verbiageResultsTitle').html(verbiage.resultsTitle);
 
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');
