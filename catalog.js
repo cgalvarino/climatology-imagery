@@ -96,7 +96,7 @@ var catalog = {
       }
 
       var colorscalerange = {
-         'Temperature' : {'Sea surface' : '10,31','Sea floor' : '0,31'}
+         'Temperature' : {'Sea surface' : '10,33','Sea floor' : '0,33'}
         ,'Salinity'    : {'Sea surface' : '32,37','Sea floor' : '32,37'}
       };
 
