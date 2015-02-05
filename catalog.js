@@ -16,7 +16,7 @@ var catalog = {
        name : 'Temperature'
       ,uom  : function(u,o) { 
         if (u == 'static') {
-          return 'degrees Fahrenheit';
+          return '&deg;F';
         }
         if (/celsius/i.test(u)) {
           return {label : 'Fahrenheit',value : o * 1.8 + 32};

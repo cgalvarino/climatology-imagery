@@ -149,3 +149,7 @@ table.dataTable thead th, table.dataTable thead td {
   top: 5px;
   right: 30px;
 }
+
+.chart-title {
+  font-size : 11px;
+}

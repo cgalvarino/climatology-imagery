@@ -503,7 +503,7 @@ function query(customRange) {
         ,src : 'img/loading.gif'
       };
     }
-    td.push('<td><img id="' + img.id + '" width=150 src="' + img.src + '"></td>'); 
+    td.push('<td><span class="chart-title" id="' + img.id + '.title"></span><img id="' + img.id + '" width=150 src="' + img.src + '"></td>'); 
   });
   dataTable.row.add(td).draw();
 
@@ -545,13 +545,14 @@ function query(customRange) {
           ,function(o){return Math.round(o[1] * 10) / 10}
         );
         var id = [data.vstr,data.depth,data.lon,data.lat,i].join('-');
-        charts.push([id,d]);
+        charts.push([id,d,data.depth + ' ' + data.vstr.toLowerCase(),_.findWhere(catalog.variables,{name : data.vstr}).uom('static')]);
       });
       var allVals = _.flatten(_.map(charts,function(o){return o[1]}));
       var minVal  = _.min(allVals);
       var maxVal  = _.max(allVals);
       var yrsStr  = _.map(data.years,function(o){return String(o).substr(2,2)});
       _.each(charts,function(o) {
+        $('[id="' + o[0] + '.title"]').html(o[2] + (o[3] != '' ? (' (' + o[3] + ')') : '') + '<br>');
         $('[id="' + o[0] + '"]').attr(
            'src'
           ,'https://chart.googleapis.com/chart?chxt=x,y&cht=bvs&chd=t:'
@@ -585,7 +586,7 @@ function query(customRange) {
 
   $('#legend-labels').css('background-image','url(' + legend + ')');
   var uom = _.findWhere(catalog.variables,{name : v}).uom('static');
-  uom = uom ? '<br>(' + uom + ')' : '';
+  uom = uom ? ' (' + uom + ')' : '';
   $('#legend #text').html('<b>' + v + uom + '<br>from ' + catalog.model.name + '</b>');
 
   $('#legend-labels').empty();
