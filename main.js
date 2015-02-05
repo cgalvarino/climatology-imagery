@@ -12,6 +12,9 @@ var proj4326 = new OpenLayers.Projection("EPSG:4326");
 var dataTable;
 
 function init() {
+  $('#modelTT').html(verbiage.modelTT.a);
+  $('#modelTT').tooltip().attr('data-original-title',verbiage.modelTT.info).tooltip('fixTitle');
+
   $('#verbiageCustomCoordinates').html(verbiage.customCoordinates);
   $('#verbiageResultsTitle').html(verbiage.resultsTitle);
 
@@ -494,7 +497,7 @@ function query(customRange) {
 
   dataTable.clear();
 
-  var td = ['<td>' + '<b>Query location<br><span id="queryCoords"></span></b><br>' + '<img class="query-marker" width=19 height=18 src="img/red_dot.png">' + '<br>Click anywhere on the map to change.</td>'];
+  var td = ['<td>' + '<b>Query location<br><span id="queryCoords"></span></b><br>' + '<img class="query-marker" width=19 height=18 src="img/red_dot.png">' + '<br><div class="results-text">Click anywhere on the map to change.</div></td>'];
   _.each(intervals,function(i) {
     var img = {id : 'foo',src: 'img/blank.png'};
     if (_.indexOf($('#intervals select').selectpicker('val'),i) >= 0 && years) {
@@ -503,7 +506,7 @@ function query(customRange) {
         ,src : 'img/loading.gif'
       };
     }
-    td.push('<td><span class="chart-title" id="' + img.id + '.title"></span><img id="' + img.id + '" width=150 src="' + img.src + '"></td>'); 
+    td.push('<td><div class="results-text" id="' + img.id + '.title"></div><img id="' + img.id + '" width=150 src="' + img.src + '"></td>'); 
   });
   dataTable.row.add(td).draw();
 

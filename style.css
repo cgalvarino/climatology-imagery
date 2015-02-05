@@ -150,6 +150,7 @@ table.dataTable thead th, table.dataTable thead td {
   right: 30px;
 }
 
-.chart-title {
+.results-text {
   font-size : 11px;
+  line-height : 1.5;
 }
