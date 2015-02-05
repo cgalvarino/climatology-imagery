@@ -510,7 +510,7 @@ function query(customRange) {
   $('#queryCoords').html([
      (Math.round(lat * 100) / 100) + ' N'
     ,(Math.round(lon * 100) / -100) + ' W'
-  ].join(', '));
+  ].join(' '));
 
   var getObs = catalog.model.getObs(v,depth,lon,lat);
   $.ajax({

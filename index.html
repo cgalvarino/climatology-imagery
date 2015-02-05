@@ -46,7 +46,7 @@
               <span id="intro">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris tristique, odio eu ultrices sagittis, massa metus rhoncus sem, ut venenatis nulla dui vitae lacus. Pellentesque convallis eu libero id consequat. Interdum et malesuada fames ac ante ipsum primis in faucibus. Interdum et malesuada fames ac ante ipsum primis in faucibus. Curabitur pharetra, ante vel iaculis ultricies, lectus ex tincidunt risus, sed dapibus felis odio ut justo. Sed sed lectus maximus, dictum felis nec, fringilla felis. Suspendisse ut massa tortor. Fusce pretium, magna sed dignissim elementum, purus enim congue nibh, non scelerisque sem odio interdum justo. Aliquam nisl tortor, mollis et aliquam et, finibus a tellus. Vivamus sodales, dui vel tempor varius, eros dolor dictum mauris, sit amet eleifend purus ipsum a diam.</span>
               <br><br>
               <div id="resultsWrapper" class="panel panel-default">
-                <div class="panel-heading">Results</div>
+                <div class="panel-heading" id="verbiageResultsTitle"></div>
                 <div class="panel-body">
                   <table id="dataTable" class="hover stripe row-border"><thead></thead><tbody></tbody></table>
                   <div class="row" id="legend">
@@ -125,7 +125,6 @@
                 <label for="customMinLat" class="col-sm-5 control-label">Min latitude</label>
                 <div class="col-sm-7">
                   <input type="text" class="form-control" name="customMinLat" id="customMinLat" placeholder="E.g.: 13.0">
-                  <span class="help-block">Decimal degrees North</span>
                 </div>
               </div>
               <div class="form-group">
@@ -139,7 +138,6 @@
                 <label for="customMinLon" class="col-sm-5 control-label">Min longitude</label>
                 <div class="col-sm-7">
                   <input type="text" class="form-control" name="customMinLon" id="customMinLon" placeholder="E.g.: 101.0">
-                  <span class="help-block">Decimal degrees West</span>
                 </div>
               </div>
               <div class="form-group">
@@ -148,6 +146,9 @@
                   <input type="text" class="form-control" name="customMaxLon" id="customMaxLon" placeholder="E.g.: 68.0">
                   <span class="help-block">Decimal degrees West</span>
                 </div>
+              </div>
+              <div>
+                <i id="verbiageCustomCoordinates"></i>
               </div>
               <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
