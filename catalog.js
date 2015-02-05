@@ -64,7 +64,7 @@ var catalog = {
       }
 
       return {
-         u : 'http://129.252.139.124/thredds/ncss/grid/sabgom_3_month_avg_by_year/' + layer + '_' + elevation + '_year.nc?var=' + layer + '&latitude=' + lat + '&longitude=' + lon + '&time_start=2004-02-15T00:00:00Z&time_end=2010-11-15T00:00:00Z&accept=xml'
+         u : 'http://129.252.139.124/thredds/ncss/sabgom_3_month_avg_by_year/' + layer + '_' + elevation + '_year.nc?var=' + layer + '&latitude=' + lat + '&longitude=' + lon + '&time_start=2004-02-15T00:00:00Z&time_end=2010-11-15T00:00:00Z&accept=xml'
         ,v : layer
       };
     }
