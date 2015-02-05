@@ -12,10 +12,7 @@ var proj4326 = new OpenLayers.Projection("EPSG:4326");
 var dataTable;
 
 function init() {
-  $('#buoyTT').html(verbiage.buoyTT.a);
-  $('#buoyTT').tooltip().attr('data-original-title',verbiage.buoyTT.info).tooltip('fixTitle');
-  $('#modelTT').html(verbiage.modelTT.a);
-  $('#modelTT').tooltip().attr('data-original-title',verbiage.modelTT.info).tooltip('fixTitle');
+  $('#verbiageCustomCoordinates').html(verbiage.customCoordinates);
 
   $('#coords .btn-default').on('click',function() {
     $('#location').selectpicker('val','custom');

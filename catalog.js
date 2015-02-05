@@ -135,12 +135,5 @@ var defaults = {
 };
 
 var verbiage = {
-  'buoyTT' : {
-     a    : 'SECOORA&nbsp;buoys'
-    ,info : 'Three stations operated and maintained by University of North Carolina, Wilmington (CRCOOS); Three stations operated by the University of South Florida (USF)'
-  }
-  ,'modelTT' : {
-     a    : 'model&nbsp;results'
-    ,info : 'North Carolina State University\'s Regional Scale Ocean Model:  South Atlantic Bight Gulf of Mexico (SABGOM)'
-  }
+  'customCoordinates' : 'The SABGOM model domain is 13-40 latitude (degrees North) and 101-68 longitude (degrees West).'
 };
