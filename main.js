@@ -505,7 +505,7 @@ function query(customRange) {
         ,src : 'img/loading.gif'
       };
     }
-    td.push('<td><img id="' + img.id + '" width=150 height=150 src="' + img.src + '"></td>'); 
+    td.push('<td><img id="' + img.id + '" width=150 src="' + img.src + '"></td>'); 
   });
   dataTable.row.add(td).draw();
 
@@ -579,7 +579,7 @@ function query(customRange) {
       if (_.indexOf($('#intervals select').selectpicker('val'),i) < 0) {
         u.fg = 'img/blank.png';
       }
-      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 height=150 src="img/loading.gif"><img style="display:none" width=150 height=150 src="' + u.fg + '" onload="imgLoaded(this)"></a></td>');
+      td.push('<td><a href="' + u.fg + '" data-toggle="lightbox" data-gallery="multiimages" data-parent="#dataTable" data-type="image" data-footer="Click left or right to move to the neighboring slide." data-title="' + i + ' ' + y + '"><img width=150 src="img/loading.gif"><img style="display:none" width=150 src="' + u.fg + '" onload="imgLoaded(this)"></a></td>');
       legend = 'img/' + p.legend + '.png';
     });
     dataTable.row.add(td).draw();
@@ -605,11 +605,17 @@ function query(customRange) {
 }
 
 function makeGetMapUrl(p,bbox,size,customRange) {
-  // figure out the lats based on the bbox lon's & size
-  var ratio = (Number(bbox[2]) - Number(bbox[0])) / size;
-  var dLat  = ratio * size - Number(bbox[3]) + Number(bbox[1]);
-  bbox[1] = Number(bbox[1]) - dLat / 2; 
-  bbox[3] = Number(bbox[3]) + dLat / 2;
+  var w = size;
+  var h = size;
+  var dLat = Number(bbox[3]) - Number(bbox[1]);
+  var dLon = Number(bbox[2]) - Number(bbox[0]);
+
+  if (dLat > dLon) {
+    w = dLon * h / dLat;
+  }
+  else if (dLat < dLon) {
+    h = dLat * w / dLon; 
+  }
 
   var fg = OpenLayers.Util.urlAppend(
      p['url']
@@ -619,8 +625,8 @@ function makeGetMapUrl(p,bbox,size,customRange) {
       ,COLORSCALERANGE : customRange ? customRange.join(',') : p['COLORSCALERANGE']
       ,ELEVATION       : p['ELEVATION']
       ,TIME            : p['TIME']
-      ,WIDTH           : size
-      ,HEIGHT          : size
+      ,WIDTH           : Math.round(w)
+      ,HEIGHT          : Math.round(h)
       ,BBOX            : bbox.join(',')
       ,TRANSPARENT     : true
       ,FORMAT          : 'image/png'
